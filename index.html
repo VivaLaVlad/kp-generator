@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Генератор КП</title>
-  <script src="https://cdn.jsdelivr.net/npm/docx@4.3.0/build/docx.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docx@6.1.0/build/index.umd.min.js"></script>
 </head>
 <body>
   <h1>Генератор коммерческого предложения</h1>
@@ -37,6 +37,7 @@
       form.addEventListener('submit', async function(event) {
         event.preventDefault();
 
+        const docx = window.docx;
         const partnerName = form.partnerName.value.trim();
         const companyName = form.companyName.value.trim();
         const managerName = form.managerName.value.trim();
@@ -67,20 +68,13 @@
 
         bodyText += `\nС уважением,\n${managerName}`;
 
-        const doc = new docx.Document();
-        doc.addSection({
-          children: [new docx.Paragraph(bodyText)]
+        const doc = new docx.Document({
+          sections: [
+            {
+              children: [new docx.Paragraph(bodyText)]
+            }
+          ]
         });
 
         const blob = await docx.Packer.toBlob(doc);
-        const url = URL.createObjectURL(blob);
-
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Коммерческое_предложение_${partnerName.replace(/\\s+/g, '_')}.docx`;
-        a.click();
-      });
-    });
-  </script>
-</body>
-</html>
+        const url = URL.cr
