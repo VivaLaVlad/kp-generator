@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Генератор КП</title>
+  <script src="https://unpkg.com/docx@4.4.0/build/index.js"></script>
+</head>
+<body>
+  <h1>Генератор коммерческого предложения</h1>
+  <form id="kpi-form">
+    <label>ФИО партнёра: <input type="text" name="partnerName" required></label><br><br>
+    <label>Компания партнёра: <input type="text" name="companyName" required></label><br><br>
+    <label>ФИО менеджера: <input type="text" name="managerName" required></label><br><br>
+    <label>Выручка от всех привлечённых клиентов (в рублях): <input type="number" name="revenue" required></label><br><br>
+    <label>Тип взаимодействия:
+      <select name="cooperationType">
+        <option value="reseller">Реселлер (скидка + рибейт)</option>
+        <option value="agent">Агент (вознаграждение)</option>
+      </select>
+    </label><br><br>
+
+    <label>Выбранные продукты:<br>
+      <input type="checkbox" name="products" value="Virtual Infrastructure"> Virtual Infrastructure<br>
+      <input type="checkbox" name="products" value="MWS Tables"> MWS Tables<br>
+      <input type="checkbox" name="products" value="MWS DataOps"> MWS DataOps<br>
+      <input type="checkbox" name="products" value="MWS GPT"> MWS GPT<br>
+      <input type="checkbox" name="products" value="MWS Octapi"> MWS Octapi<br>
+    </label><br><br>
+
+    <button type="submit">Сгенерировать КП (DOCX)</button>
+  </form>
+
+  <script>
+    window.addEventListener('load', () => {
+      const form = document.getElementById('kpi-form');
+
+      form.addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const partnerName = form.partnerName.value.trim();
+        const companyName = form.companyName.value.trim();
+        const managerName = form.managerName.value.trim();
+        const revenue = parseFloat(form.revenue.value);
+        const cooperationType = form.cooperationType.value;
+        const selectedProducts = Array.from(form.querySelectorAll('input[name="products"]:checked')).map(el => el.value);
+
+        let status = 'Basic';
+        if (revenue >= 15000000) status = 'Professional';
+        else if (revenue >= 5000000) status = 'Expert';
+
+        let bodyText = `Коммерческое предложение для компании ${companyName}\n\n`;
+        bodyText += `Партнёр: ${partnerName}\n`;
+        bodyText += `Тип взаимодействия: ${cooperationType === 'reseller' ? 'Реселлер' : 'Агент'}\n`;
+        bodyText += `Статус партнёра: ${status}\n\n`;
+        bodyText += `Выбранные продукты и условия:\n`;
+
+        selectedProducts.forEach(product => {
+          if (cooperationType === 'reseller') {
+            const discount = { 'Basic': '5%', 'Expert': '7%', 'Professional': '10%' }[status];
+            const rebate = '5%';
+            bodyText += `- ${product}: Скидка ${discount}, Рибейт ${rebate}\n`;
+          } else {
+            const reward = { 'Basic': '10%', 'Expert': '15%', 'Professional': '20%' }[status];
+            bodyText += `- ${product}: Вознаграждение ${reward}\n`;
+          }
+        });
+
+        bodyText += `\nС уважением,\n${managerName}`;
+
+        const doc = new docx.Document();
+        doc.addSection({
+          children: [new docx.Paragraph(bodyText)]
+        });
+
+        const blob = await docx.Packer.toBlob(doc);
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Коммерческое_предложение_${partnerName.replace(/\\s+/g, '_')}.docx`;
+        a.click();
+      });
+    });
+  </script>
+</body>
+</html>
