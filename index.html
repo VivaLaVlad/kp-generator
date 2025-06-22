@@ -62,70 +62,65 @@
   </form>
 
   <script>
-    window.addEventListener('load', () => {
-      const form = document.getElementById('kpi-form');
-      form.addEventListener('submit', async function(event) {
-        event.preventDefault();
+    document.getElementById('kpi-form').addEventListener('submit', async function(event) {
+      event.preventDefault();
 
-        const docx = window.docx;
-        const partnerName = form.partnerName.value.trim();
-        const companyName = form.companyName.value.trim();
-        const managerName = form.managerName.value.trim();
-        const revenue = parseFloat(form.revenue.value);
-        const cooperationType = form.cooperationType.value;
-        const selectedProducts = Array.from(form.querySelectorAll('input[name="products"]:checked')).map(el => el.value);
+      const partnerName = this.partnerName.value.trim();
+      const companyName = this.companyName.value.trim();
+      const managerName = this.managerName.value.trim();
+      const revenue = parseFloat(this.revenue.value);
+      const cooperationType = this.cooperationType.value;
+      const selectedProducts = Array.from(this.querySelectorAll('input[name="products"]:checked')).map(el => el.value);
 
-        let status = 'Basic';
-        if (revenue >= 15000000) status = 'Professional';
-        else if (revenue >= 5000000) status = 'Expert';
+      let status = 'Basic';
+      if (revenue >= 15000000) status = 'Professional';
+      else if (revenue >= 5000000) status = 'Expert';
 
-        const discounts = {
-          reseller: { Basic: '5%', Expert: '7%', Professional: '10%' },
-          agent: { Basic: '10%', Expert: '15%', Professional: '20%' }
-        };
+      const discounts = {
+        reseller: { Basic: '5%', Expert: '7%', Professional: '10%' },
+        agent: { Basic: '10%', Expert: '15%', Professional: '20%' }
+      };
 
-        const rebate = '5%';
+      const rebate = '5%';
 
-        let body = `Коммерческое предложение\n\nКомпания: ${companyName}\nПартнёр: ${partnerName}\nТип: ${cooperationType === 'reseller' ? 'Реселлер' : 'Агент'}\nСтатус: ${status}\n\n`;
+      let body = `Коммерческое предложение\n\nКомпания: ${companyName}\nПартнёр: ${partnerName}\nТип: ${cooperationType === 'reseller' ? 'Реселлер' : 'Агент'}\nСтатус: ${status}\n\n`;
+      body += `Выбранные продукты:\n`;
 
-        body += `Выбранные продукты:\n`;
-
-        selectedProducts.forEach(product => {
-          if (cooperationType === 'reseller') {
-            if (product === 'SD-WAN' || product === 'MWS SUNQ') {
-              body += `- ${product}: индивидуальное предложение\n`;
-            } else if (product === 'MWS GPT') {
-              body += `- ${product}: скидка отсутствует, рибейт ${rebate}\n`;
-            } else if (product === 'Desktops') {
-              body += `- ${product}: скидка отсутствует\n`;
-            } else {
-              body += `- ${product}: скидка ${discounts.reseller[status]}, рибейт ${rebate}\n`;
-            }
+      selectedProducts.forEach(product => {
+        if (cooperationType === 'reseller') {
+          if (product === 'SD-WAN' || product === 'MWS SUNQ') {
+            body += `- ${product}: индивидуальное предложение\n`;
+          } else if (product === 'MWS GPT') {
+            body += `- ${product}: скидка отсутствует, рибейт ${rebate}\n`;
+          } else if (product === 'Desktops') {
+            body += `- ${product}: скидка отсутствует\n`;
           } else {
-            if (product === 'Desktops') {
-              body += `- ${product}: вознаграждение 5% / 10% / 15%\n`;
-            } else if (product === 'MWS GPT') {
-              body += `- ${product}: вознаграждение 5% / 10% / 15%\n`;
-            } else if (product === 'SD-WAN' || product === 'MWS SUNQ') {
-              body += `- ${product}: индивидуальное предложение\n`;
-            } else {
-              body += `- ${product}: вознаграждение ${discounts.agent[status]}\n`;
-            }
+            body += `- ${product}: скидка ${discounts.reseller[status]}, рибейт ${rebate}\n`;
           }
-        });
-
-        body += `\nС уважением,\n${managerName}`;
-
-        const doc = new docx.Document({
-          sections: [
-            { children: [new docx.Paragraph(body)] }
-          ]
-        });
-
-        const blob = await docx.Packer.toBlob(doc);
-        const url = URL.createObjectURL(blob);
-        window.open(url, '_blank');
+        } else {
+          if (product === 'Desktops' || product === 'MWS GPT') {
+            body += `- ${product}: вознаграждение 5% / 10% / 15%\n`;
+          } else if (product === 'SD-WAN' || product === 'MWS SUNQ') {
+            body += `- ${product}: индивидуальное предложение\n`;
+          } else {
+            body += `- ${product}: вознаграждение ${discounts.agent[status]}\n`;
+          }
+        }
       });
+
+      body += `\nС уважением,\n${managerName}`;
+
+      const { Document, Paragraph, Packer } = await import('https://cdn.jsdelivr.net/npm/docx@6.1.0/build/index.umd.min.js');
+
+      const doc = new Document({
+        sections: [
+          { children: [new Paragraph(body)] }
+        ]
+      });
+
+      const blob = await Packer.toBlob(doc);
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
     });
   </script>
 </body>
