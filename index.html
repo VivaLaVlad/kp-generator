@@ -4,36 +4,66 @@
   <meta charset="UTF-8">
   <title>Генератор КП</title>
   <script src="https://cdn.jsdelivr.net/npm/docx@6.1.0/build/index.umd.min.js"></script>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 2rem; }
+    h1 { color: #333; }
+    label { display: block; margin-top: 1rem; }
+    button { margin-top: 2rem; padding: 0.5rem 1rem; font-size: 1rem; }
+    fieldset { border: 1px solid #ccc; padding: 1rem; margin-top: 1rem; }
+    legend { font-weight: bold; }
+  </style>
 </head>
 <body>
   <h1>Генератор коммерческого предложения</h1>
   <form id="kpi-form">
-    <label>ФИО партнёра: <input type="text" name="partnerName" required></label><br><br>
-    <label>Компания партнёра: <input type="text" name="companyName" required></label><br><br>
-    <label>ФИО менеджера: <input type="text" name="managerName" required></label><br><br>
-    <label>Выручка от всех привлечённых клиентов (в рублях): <input type="number" name="revenue" required></label><br><br>
+    <label>ФИО партнёра: <input type="text" name="partnerName" required></label>
+    <label>Компания партнёра: <input type="text" name="companyName" required></label>
+    <label>ФИО менеджера: <input type="text" name="managerName" required></label>
+    <label>Выручка за всех клиентов (в рублях): <input type="number" name="revenue" required></label>
     <label>Тип взаимодействия:
       <select name="cooperationType">
         <option value="reseller">Реселлер (скидка + рибейт)</option>
         <option value="agent">Агент (вознаграждение)</option>
       </select>
-    </label><br><br>
+    </label>
 
-    <label>Выбранные продукты:<br>
-      <input type="checkbox" name="products" value="Virtual Infrastructure"> Virtual Infrastructure<br>
-      <input type="checkbox" name="products" value="MWS Tables"> MWS Tables<br>
-      <input type="checkbox" name="products" value="MWS DataOps"> MWS DataOps<br>
-      <input type="checkbox" name="products" value="MWS GPT"> MWS GPT<br>
-      <input type="checkbox" name="products" value="MWS Octapi"> MWS Octapi<br>
-    </label><br><br>
+    <fieldset>
+      <legend>Продукты Infra & Network</legend>
+      <label><input type="checkbox" name="products" value="Virtual Infrastructure"> Виртуальная инфраструктура</label>
+      <label><input type="checkbox" name="products" value="VI 152-ФЗ"> Вирт. инфраструктура (152-ФЗ)</label>
+      <label><input type="checkbox" name="products" value="VI GPU"> Вирт. инфраструктура (GPU)</label>
+      <label><input type="checkbox" name="products" value="Backup"> Резервное копирование</label>
+      <label><input type="checkbox" name="products" value="DR"> Катастрофоустойчивая инфраструктура</label>
+      <label><input type="checkbox" name="products" value="SD-WAN"> MWS SD-WAN</label>
+      <label><input type="checkbox" name="products" value="Cloud CDN"> Cloud CDN</label>
+      <label><input type="checkbox" name="products" value="Cloud VPN"> Cloud VPN</label>
+    </fieldset>
 
-    <button type="submit">Сгенерировать КП (DOCX)</button>
+    <fieldset>
+      <legend>Communication & Collaboration</legend>
+      <label><input type="checkbox" name="products" value="MWS Tables"> MWS Tables</label>
+      <label><input type="checkbox" name="products" value="Desktops"> Виртуальные рабочие места</label>
+      <label><input type="checkbox" name="products" value="MWS Mail"> Корпоративная почта</label>
+      <label><input type="checkbox" name="products" value="MWS Office"> Офис MWS</label>
+      <label><input type="checkbox" name="products" value="MWS Disk"> Диск MWS</label>
+      <label><input type="checkbox" name="products" value="Object Storage"> Object Storage</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Data & BI / AI / DevOps</legend>
+      <label><input type="checkbox" name="products" value="MWS DataOps"> MWS DataOps</label>
+      <label><input type="checkbox" name="products" value="MWS GPT"> MWS GPT</label>
+      <label><input type="checkbox" name="products" value="MWS Container Platform"> MWS Container Platform</label>
+      <label><input type="checkbox" name="products" value="MWS Octapi"> MWS Octapi</label>
+      <label><input type="checkbox" name="products" value="MWS SUNQ"> MWS SUNQ</label>
+    </fieldset>
+
+    <button type="submit">Сгенерировать КП (.docx)</button>
   </form>
 
   <script>
     window.addEventListener('load', () => {
       const form = document.getElementById('kpi-form');
-
       form.addEventListener('submit', async function(event) {
         event.preventDefault();
 
@@ -49,41 +79,52 @@
         if (revenue >= 15000000) status = 'Professional';
         else if (revenue >= 5000000) status = 'Expert';
 
-        let bodyText = `Коммерческое предложение для компании ${companyName}\n\n`;
-        bodyText += `Партнёр: ${partnerName}\n`;
-        bodyText += `Тип взаимодействия: ${cooperationType === 'reseller' ? 'Реселлер' : 'Агент'}\n`;
-        bodyText += `Статус партнёра: ${status}\n\n`;
-        bodyText += `Выбранные продукты и условия:\n`;
+        const discounts = {
+          reseller: { Basic: '5%', Expert: '7%', Professional: '10%' },
+          agent: { Basic: '10%', Expert: '15%', Professional: '20%' }
+        };
+
+        const rebate = '5%';
+
+        let body = `Коммерческое предложение\n\nКомпания: ${companyName}\nПартнёр: ${partnerName}\nТип: ${cooperationType === 'reseller' ? 'Реселлер' : 'Агент'}\nСтатус: ${status}\n\n`;
+
+        body += `Выбранные продукты:\n`;
 
         selectedProducts.forEach(product => {
           if (cooperationType === 'reseller') {
-            const discount = { 'Basic': '5%', 'Expert': '7%', 'Professional': '10%' }[status];
-            const rebate = '5%';
-            bodyText += `- ${product}: Скидка ${discount}, Рибейт ${rebate}\n`;
+            if (product === 'SD-WAN' || product === 'MWS SUNQ') {
+              body += `- ${product}: индивидуальное предложение\n`;
+            } else if (product === 'MWS GPT') {
+              body += `- ${product}: скидка отсутствует, рибейт ${rebate}\n`;
+            } else if (product === 'Desktops') {
+              body += `- ${product}: скидка отсутствует\n`;
+            } else {
+              body += `- ${product}: скидка ${discounts.reseller[status]}, рибейт ${rebate}\n`;
+            }
           } else {
-            const reward = { 'Basic': '10%', 'Expert': '15%', 'Professional': '20%' }[status];
-            bodyText += `- ${product}: Вознаграждение ${reward}\n`;
+            if (product === 'Desktops') {
+              body += `- ${product}: вознаграждение 5% / 10% / 15%\n`;
+            } else if (product === 'MWS GPT') {
+              body += `- ${product}: вознаграждение 5% / 10% / 15%\n`;
+            } else if (product === 'SD-WAN' || product === 'MWS SUNQ') {
+              body += `- ${product}: индивидуальное предложение\n`;
+            } else {
+              body += `- ${product}: вознаграждение ${discounts.agent[status]}\n`;
+            }
           }
         });
 
-        bodyText += `\nС уважением,\n${managerName}`;
+        body += `\nС уважением,\n${managerName}`;
 
         const doc = new docx.Document({
           sections: [
-            {
-              children: [new docx.Paragraph(bodyText)]
-            }
+            { children: [new docx.Paragraph(body)] }
           ]
         });
 
         const blob = await docx.Packer.toBlob(doc);
         const url = URL.createObjectURL(blob);
-
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Коммерческое_предложение_${partnerName.replace(/\s+/g, '_')}.docx`;
-        a.click();
-        URL.revokeObjectURL(url);
+        window.open(url, '_blank');
       });
     });
   </script>
