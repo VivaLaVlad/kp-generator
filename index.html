@@ -23,7 +23,7 @@
 </head>
 <body>
   <header>
-    <h1>Калькулятор партнёрской программы MWS</h1>
+    <h1>Калькулятор партнёрской выгоды MWS</h1>
     <p>Отметьте продукты и укажите сумму сделки</p>
   </header>
   <main>
@@ -108,8 +108,12 @@
     }
 
     function toggleInput(checkbox) {
-      const product = checkbox.dataset.product;
-      const input = document.querySelector(`[data-input="${product}"]`);
+  const product = checkbox.dataset.product;
+  const parentTable = checkbox.closest('table');
+  const input = parentTable.querySelector(`[data-input="${product}"]`);
+  input.disabled = !checkbox.checked;
+  if (!checkbox.checked) input.value = '';
+}"]`);
       input.disabled = !checkbox.checked;
       if (!checkbox.checked) input.value = '';
     }
