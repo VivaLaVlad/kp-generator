@@ -23,7 +23,7 @@
 </head>
 <body>
   <header>
-    <h1>Калькулятор партнёрской программы MWS</h1>
+    <h1>Калькулятор партнёрской выгоды MWS</h1>
     <p>Отметьте продукты и укажите сумму сделки</p>
   </header>
   <main>
@@ -60,23 +60,40 @@
 
   <script>
     const agentData = {
-      "Виртуальная инфраструктура (Virtual Infrastructure)": { Basic: 0.10, Expert: 0.15, Professional: 0.20 },
-      "MWS Tables": { Basic: 0.10, Expert: 0.15, Professional: 0.20 },
-      "Виртуальное рабочее место (Desktops) и Виртуальное рабочее место (Workspaces с GPU)": { Basic: 0.05, Expert: 0.10, Professional: 0.15 },
-      "MWS DataOps": { Basic: 0.10, Expert: 0.15, Professional: 0.20 },
-      "MWS GPT": { Basic: 0.05, Expert: 0.10, Professional: 0.15 },
-      "MWS Container Platform": { Basic: 0.10, Expert: 0.15, Professional: 0.20 },
-      "MWS Octapi": { Basic: 0.10, Expert: 0.15, Professional: 0.20 }
-    };
+  "Виртуальная инфраструктура (Virtual Infrastructure)": { Basic: 0.10, Expert: 0.15, Professional: 0.20 },
+  "Виртуальная инфраструктура. Аттестованный сегмент 152-ФЗ": { Basic: 0.10, Expert: 0.15, Professional: 0.20 },
+  "Виртуальная инфраструктура. Графические процессоры GPU": { Basic: 0.10, Expert: 0.15, Professional: 0.20 },
+  "Резервное копирование": { Basic: 0.10, Expert: 0.15, Professional: 0.20 },
+  "Катастрофоустойчивая инфраструктура": { Basic: 0.10, Expert: 0.15, Professional: 0.20 },
+  "MWS Tables": { Basic: 0.10, Expert: 0.15, Professional: 0.20 },
+  "Виртуальное рабочее место (Desktops) и Виртуальное рабочее место (Workspaces с GPU)": { Basic: 0.05, Expert: 0.10, Professional: 0.15 },
+  "Корпоративная почта MWS": { Basic: 0.05, Expert: 0.10, Professional: 0.15 },
+  "Офис MWS": { Basic: 0.05, Expert: 0.10, Professional: 0.15 },
+  "Диск MWS": { Basic: 0.05, Expert: 0.10, Professional: 0.15 },
+  "MWS Cloud Platform Object Storage": { Basic: 0.05, Expert: 0.10, Professional: 0.15 },
+  "MWS DataOps": { Basic: 0.10, Expert: 0.15, Professional: 0.20 },
+  "MWS GPT": { Basic: 0.05, Expert: 0.10, Professional: 0.15 },
+  "MWS Container Platform": { Basic: 0.10, Expert: 0.15, Professional: 0.20 },
+  "MWS Octapi": { Basic: 0.10, Expert: 0.15, Professional: 0.20 }
+};
 
     const resellerData = {
-      "Виртуальная инфраструктура (Virtual Infrastructure)": { Basic: 0.05, Expert: 0.07, Professional: 0.10 },
-      "MWS Tables": { Basic: 0.05, Expert: 0.07, Professional: 0.10 },
-      "MWS DataOps": { Basic: 0.05, Expert: 0.07, Professional: 0.10 },
-      "MWS GPT*": { Basic: 0, Expert: 0, Professional: 0 },
-      "MWS Container Platform": { Basic: 0.05, Expert: 0.07, Professional: 0.10 },
-      "MWS Octapi": { Basic: 0.05, Expert: 0.07, Professional: 0.10 }
-    };
+  "Виртуальная инфраструктура (Virtual Infrastructure)": { Basic: 0.05, Expert: 0.07, Professional: 0.10 },
+  "Виртуальная инфраструктура. Аттестованный сегмент 152-ФЗ": { Basic: 0.05, Expert: 0.07, Professional: 0.10 },
+  "Виртуальная инфраструктура. Графические процессоры GPU": { Basic: 0.05, Expert: 0.07, Professional: 0.10 },
+  "Резервное копирование": { Basic: 0.05, Expert: 0.07, Professional: 0.10 },
+  "Катастрофоустойчивая инфраструктура": { Basic: 0.05, Expert: 0.07, Professional: 0.10 },
+  "MWS Tables": { Basic: 0.05, Expert: 0.07, Professional: 0.10 },
+  "Виртуальное рабочее место (Desktops) и Виртуальное рабочее место (Workspaces с GPU)": { Basic: 0, Expert: 0, Professional: 0 },
+  "Корпоративная почта MWS": { Basic: 0, Expert: 0, Professional: 0 },
+  "Офис MWS": { Basic: 0, Expert: 0, Professional: 0 },
+  "Диск MWS": { Basic: 0, Expert: 0, Professional: 0 },
+  "MWS Cloud Platform Object Storage": { Basic: 0, Expert: 0, Professional: 0 },
+  "MWS DataOps": { Basic: 0.05, Expert: 0.07, Professional: 0.10 },
+  "MWS GPT": { Basic: 0, Expert: 0, Professional: 0 },
+  "MWS Container Platform": { Basic: 0.05, Expert: 0.07, Professional: 0.10 },
+  "MWS Octapi": { Basic: 0.05, Expert: 0.07, Professional: 0.10 }
+};
 
     function populateTable(id, data) {
       const table = document.getElementById(id + "Table");
