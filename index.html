@@ -2,126 +2,109 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Генератор КП</title>
-  <script src="https://cdn.jsdelivr.net/npm/docx@6.1.0/build/index.umd.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Партнёрская программа MWS</title>
   <style>
-    body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 2rem; }
-    h1 { color: #333; }
-    label { display: block; margin-top: 1rem; }
-    button { margin-top: 2rem; padding: 0.5rem 1rem; font-size: 1rem; }
-    fieldset { border: 1px solid #ccc; padding: 1rem; margin-top: 1rem; }
-    legend { font-weight: bold; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+      color: #222;
+    }
+    header {
+      background-color: #d32f2f;
+      color: white;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    main {
+      max-width: 800px;
+      margin: 2rem auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #d32f2f;
+    }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+    .tab-button {
+      flex: 1;
+      padding: 1rem;
+      cursor: pointer;
+      border: none;
+      background: #ccc;
+      color: #000;
+      font-weight: bold;
+    }
+    .tab-button.active {
+      background: #d32f2f;
+      color: white;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+    }
+    select, input[type="number"] {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .result {
+      margin-top: 2rem;
+      font-size: 1.2rem;
+      color: #388e3c;
+    }
+    button.calculate {
+      margin-top: 1.5rem;
+      padding: 0.75rem;
+      background: #d32f2f;
+      color: white;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+    }
   </style>
 </head>
 <body>
-  <h1>Генератор коммерческого предложения</h1>
-  <form id="kpi-form">
-    <label>ФИО партнёра: <input type="text" name="partnerName" required></label>
-    <label>Компания партнёра: <input type="text" name="companyName" required></label>
-    <label>ФИО менеджера: <input type="text" name="managerName" required></label>
-    <label>Выручка за всех клиентов (в рублях): <input type="number" name="revenue" required></label>
-    <label>Тип взаимодействия:
-      <select name="cooperationType">
-        <option value="reseller">Реселлер (скидка + рибейт)</option>
-        <option value="agent">Агент (вознаграждение)</option>
-      </select>
-    </label>
+  <header>
+    <h1>Добро пожаловать!</h1>
+    <p>Здесь вы можете рассчитать бонусы как партнёр MWS</p>
+  </header>
 
-    <fieldset>
-      <legend>Продукты Infra & Network</legend>
-      <label><input type="checkbox" name="products" value="Virtual Infrastructure"> Виртуальная инфраструктура</label>
-      <label><input type="checkbox" name="products" value="VI 152-ФЗ"> Вирт. инфраструктура (152-ФЗ)</label>
-      <label><input type="checkbox" name="products" value="VI GPU"> Вирт. инфраструктура (GPU)</label>
-      <label><input type="checkbox" name="products" value="Backup"> Резервное копирование</label>
-      <label><input type="checkbox" name="products" value="DR"> Катастрофоустойчивая инфраструктура</label>
-      <label><input type="checkbox" name="products" value="SD-WAN"> MWS SD-WAN</label>
-      <label><input type="checkbox" name="products" value="Cloud CDN"> Cloud CDN</label>
-      <label><input type="checkbox" name="products" value="Cloud VPN"> Cloud VPN</label>
-    </fieldset>
+  <main>
+    <div class="tabs">
+      <button class="tab-button active" onclick="showTab('agent')">Я Агент</button>
+      <button class="tab-button" onclick="showTab('reseller')">Я Реселлер</button>
+    </div>
 
-    <fieldset>
-      <legend>Communication & Collaboration</legend>
-      <label><input type="checkbox" name="products" value="MWS Tables"> MWS Tables</label>
-      <label><input type="checkbox" name="products" value="Desktops"> Виртуальные рабочие места</label>
-      <label><input type="checkbox" name="products" value="MWS Mail"> Корпоративная почта</label>
-      <label><input type="checkbox" name="products" value="MWS Office"> Офис MWS</label>
-      <label><input type="checkbox" name="products" value="MWS Disk"> Диск MWS</label>
-      <label><input type="checkbox" name="products" value="Object Storage"> Object Storage</label>
-    </fieldset>
-
-    <fieldset>
-      <legend>Data & BI / AI / DevOps</legend>
-      <label><input type="checkbox" name="products" value="MWS DataOps"> MWS DataOps</label>
-      <label><input type="checkbox" name="products" value="MWS GPT"> MWS GPT</label>
-      <label><input type="checkbox" name="products" value="MWS Container Platform"> MWS Container Platform</label>
-      <label><input type="checkbox" name="products" value="MWS Octapi"> MWS Octapi</label>
-      <label><input type="checkbox" name="products" value="MWS SUNQ"> MWS SUNQ</label>
-    </fieldset>
-
-    <button type="submit">Сгенерировать КП (.docx)</button>
-  </form>
+    <div id="agent" class="tab-content active">
+      <!-- Agent form will be inserted here -->
+    </div>
+    <div id="reseller" class="tab-content">
+      <!-- Reseller form will be inserted here -->
+    </div>
+  </main>
 
   <script>
-    document.getElementById('kpi-form').addEventListener('submit', async function(event) {
-      event.preventDefault();
-
-      const partnerName = this.partnerName.value.trim();
-      const companyName = this.companyName.value.trim();
-      const managerName = this.managerName.value.trim();
-      const revenue = parseFloat(this.revenue.value);
-      const cooperationType = this.cooperationType.value;
-      const selectedProducts = Array.from(this.querySelectorAll('input[name="products"]:checked')).map(el => el.value);
-
-      let status = 'Basic';
-      if (revenue >= 15000000) status = 'Professional';
-      else if (revenue >= 5000000) status = 'Expert';
-
-      const discounts = {
-        reseller: { Basic: '5%', Expert: '7%', Professional: '10%' },
-        agent: { Basic: '10%', Expert: '15%', Professional: '20%' }
-      };
-
-      const rebate = '5%';
-
-      let body = `Коммерческое предложение\n\nКомпания: ${companyName}\nПартнёр: ${partnerName}\nТип: ${cooperationType === 'reseller' ? 'Реселлер' : 'Агент'}\nСтатус: ${status}\n\n`;
-      body += `Выбранные продукты:\n`;
-
-      selectedProducts.forEach(product => {
-        if (cooperationType === 'reseller') {
-          if (product === 'SD-WAN' || product === 'MWS SUNQ') {
-            body += `- ${product}: индивидуальное предложение\n`;
-          } else if (product === 'MWS GPT') {
-            body += `- ${product}: скидка отсутствует, рибейт ${rebate}\n`;
-          } else if (product === 'Desktops') {
-            body += `- ${product}: скидка отсутствует\n`;
-          } else {
-            body += `- ${product}: скидка ${discounts.reseller[status]}, рибейт ${rebate}\n`;
-          }
-        } else {
-          if (product === 'Desktops' || product === 'MWS GPT') {
-            body += `- ${product}: вознаграждение 5% / 10% / 15%\n`;
-          } else if (product === 'SD-WAN' || product === 'MWS SUNQ') {
-            body += `- ${product}: индивидуальное предложение\n`;
-          } else {
-            body += `- ${product}: вознаграждение ${discounts.agent[status]}\n`;
-          }
-        }
-      });
-
-      body += `\nС уважением,\n${managerName}`;
-
-      const { Document, Paragraph, Packer } = await import('https://cdn.jsdelivr.net/npm/docx@6.1.0/build/index.umd.min.js');
-
-      const doc = new Document({
-        sections: [
-          { children: [new Paragraph(body)] }
-        ]
-      });
-
-      const blob = await Packer.toBlob(doc);
-      const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
-    });
+    function showTab(id) {
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelector(`[onclick="showTab('${id}')"]`).classList.add('active');
+      document.getElementById(id).classList.add('active');
+    }
   </script>
 </body>
 </html>
