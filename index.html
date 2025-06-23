@@ -155,12 +155,28 @@
     };
 
     const categories = {
-      "Infra & Network": ["Виртуальная инфраструктура (Virtual Infrastructure)"],
-      "Communication & Collaboration": ["MWS Tables"],
-      "Data&BI": ["MWS DataOps"],
-      "AI/ML": ["MWS GPT*"],
-      "DevOps": ["MWS Container Platform", "MWS Octapi", "MWS SUNQ"]
-    };
+  "Infra & Network": [
+    "Виртуальная инфраструктура (Virtual Infrastructure)",
+    "Виртуальная инфраструктура. Аттестованный сегмент 152-ФЗ",
+    "Виртуальная инфраструктура. Графические процессоры GPU",
+    "Резервное копирование",
+    "Катастрофоустойчивая инфраструктура",
+    "МВС SD-WAN",
+    "Сервис быстрой доставки контента (Cloud CDN)",
+    "Изолированные сетевые соединения (Cloud VPN)"
+  ],
+  "Communication & Collaboration": [
+    "MWS Tables",
+    "Виртуальное рабочее место (Desktops) и Виртуальное рабочее место (Workspaces с GPU)",
+    "Корпоративная почта MWS",
+    "Офис MWS",
+    "Диск MWS",
+    "MWS Cloud Platform Object Storage"
+  ],
+  "Data&BI": ["MWS DataOps"],
+  "AI/ML": ["MWS GPT*"],
+  "DevOps": ["MWS Container Platform", "MWS Octapi", "MWS SUNQ"]
+};
 
     function updateProducts(role) {
       const categorySelect = document.getElementById(role + "Category");
