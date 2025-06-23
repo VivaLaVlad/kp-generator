@@ -179,38 +179,34 @@
 };
 
     function updateProducts(role) {
-      const categorySelect = document.getElementById(role + "Category");
-      const productSelect = document.getElementById(role + "Product");
-      productSelect.innerHTML = "";
-      const selectedCat = categorySelect.value;
-      for (const [cat, prods] of Object.entries(categories)) {
-        if (prods.includes(selectedCat)) {
-          prods.forEach(p => {
-            const opt = document.createElement("option");
-            opt.value = p;
-            opt.text = p;
-            productSelect.appendChild(opt);
-          });
-          break;
-        }
-      }
-    }
+  const categorySelect = document.getElementById(role + "Category");
+  const productSelect = document.getElementById(role + "Product");
+  productSelect.innerHTML = "";
+  const selectedCat = categorySelect.value;
+  if (categories[selectedCat]) {
+    categories[selectedCat].forEach(p => {
+      const opt = document.createElement("option");
+      opt.value = p;
+      opt.text = p;
+      productSelect.appendChild(opt);
+    });
+  }
+}
 
     window.onload = function() {
-      ["agentCategory", "resellerCategory"].forEach(id => {
-        const select = document.getElementById(id);
-        Object.entries(categories).forEach(([cat, prods]) => {
-          prods.forEach(p => {
-            const opt = document.createElement("option");
-            opt.value = p;
-            opt.text = p;
-            select.appendChild(opt);
-          });
-        });
-      });
-      updateProducts("agent");
-      updateProducts("reseller");
-    };
+  ["agentCategory", "resellerCategory"].forEach(id => {
+    const select = document.getElementById(id);
+    select.innerHTML = "";
+    Object.keys(categories).forEach(cat => {
+      const opt = document.createElement("option");
+      opt.value = cat;
+      opt.text = cat;
+      select.appendChild(opt);
+    });
+  });
+  updateProducts("agent");
+  updateProducts("reseller");
+};
 
     function calculateAgent() {
       const level = document.getElementById("agentLevel").value;
