@@ -5,85 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Партнёрская программа MWS</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f5f5f5;
-      color: #222;
-    }
-    header {
-      background-color: #d32f2f;
-      color: white;
-      padding: 1.5rem;
-      text-align: center;
-    }
-    main {
-      max-width: 800px;
-      margin: 2rem auto;
-      background: white;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    h2 {
-      color: #d32f2f;
-    }
-    .tabs {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 2rem;
-    }
-    .tab-button {
-      flex: 1;
-      padding: 1rem;
-      cursor: pointer;
-      border: none;
-      background: #ccc;
-      color: #000;
-      font-weight: bold;
-    }
-    .tab-button.active {
-      background: #d32f2f;
-      color: white;
-    }
-    .tab-content {
-      display: none;
-    }
-    .tab-content.active {
-      display: block;
-    }
-    label {
-      display: block;
-      margin-top: 1rem;
-    }
-    select, input[type="number"] {
-      width: 100%;
-      padding: 0.5rem;
-      margin-top: 0.5rem;
-    }
-    .result {
-      margin-top: 2rem;
-      font-size: 1.2rem;
-      color: #388e3c;
-    }
-    button.calculate {
-      margin-top: 1.5rem;
-      padding: 0.75rem;
-      background: #d32f2f;
-      color: white;
-      border: none;
-      cursor: pointer;
-      width: 100%;
-    }
+    body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 0; }
+    header { background-color: #d32f2f; color: white; padding: 1.5rem; text-align: center; }
+    main { max-width: 1000px; margin: 2rem auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .tabs { display: flex; justify-content: center; margin-bottom: 2rem; }
+    .tab-button { flex: 1; padding: 1rem; cursor: pointer; border: none; background: #ccc; color: #000; font-weight: bold; }
+    .tab-button.active { background: #d32f2f; color: white; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
+    th { background-color: #eee; }
+    input[type="number"] { width: 100%; padding: 4px; }
+    .result { margin-top: 1.5rem; font-size: 1.2rem; color: #388e3c; font-weight: bold; }
+    button.calculate { margin-top: 1rem; padding: 0.75rem; background: #d32f2f; color: white; border: none; cursor: pointer; width: 100%; }
   </style>
 </head>
 <body>
   <header>
-    <h1>Добро пожаловать!</h1>
-    <p>Здесь вы можете рассчитать бонусы как партнёр MWS</p>
+    <h1>Калькулятор партнёрской выгоды MWS</h1>
+    <p>Отметьте продукты и укажите сумму сделки</p>
   </header>
-
   <main>
     <div class="tabs">
       <button class="tab-button active" onclick="showTab('agent')">Я Агент</button>
@@ -91,146 +33,83 @@
     </div>
 
     <div id="agent" class="tab-content active">
-      <h2>Расчёт скидки для Агента</h2>
       <label>Ваш уровень:</label>
       <select id="agentLevel">
-        <option value="Basic">Basic (до 5 млн руб)</option>
-        <option value="Expert">Expert (5–15 млн руб)</option>
-        <option value="Professional">Professional (15+ млн руб)</option>
+        <option value="Basic">Basic</option>
+        <option value="Expert">Expert</option>
+        <option value="Professional">Professional</option>
       </select>
-
-      <label>Специализация:</label>
-      <select id="agentCategory" onchange="updateProducts('agent')"></select>
-
-      <label>Продукт:</label>
-      <select id="agentProduct"></select>
-
-      <label>Вы регистрировали сделку?</label>
-      <select id="agentRegistered">
-        <option value="no">Нет</option>
-        <option value="yes">Да</option>
-      </select>
-
-      <label>Сумма контракта, руб.:</label>
-      <input type="number" id="agentAmount" placeholder="Введите сумму">
-
-      <button class="calculate" onclick="calculateAgent()">Рассчитать</button>
-
+      <table id="agentTable"></table>
+      <button class="calculate" onclick="calculate('agent')">Рассчитать</button>
       <div class="result" id="agentResult"></div>
     </div>
 
     <div id="reseller" class="tab-content">
-      <h2>Расчёт вознаграждения для Реселлера</h2>
       <label>Ваш уровень:</label>
       <select id="resellerLevel">
-        <option value="Basic">Basic (до 5 млн руб)</option>
-        <option value="Expert">Expert (5–15 млн руб)</option>
-        <option value="Professional">Professional (15+ млн руб)</option>
+        <option value="Basic">Basic</option>
+        <option value="Expert">Expert</option>
+        <option value="Professional">Professional</option>
       </select>
-
-      <label>Специализация:</label>
-      <select id="resellerCategory" onchange="updateProducts('reseller')"></select>
-
-      <label>Продукт:</label>
-      <select id="resellerProduct"></select>
-
-      <label>Сумма контракта, руб.:</label>
-      <input type="number" id="resellerAmount" placeholder="Введите сумму">
-
-      <button class="calculate" onclick="calculateReseller()">Рассчитать</button>
-
+      <table id="resellerTable"></table>
+      <button class="calculate" onclick="calculate('reseller')">Рассчитать</button>
       <div class="result" id="resellerResult"></div>
     </div>
   </main>
 
   <script>
-    const discounts = {
-      "Виртуальная инфраструктура (Virtual Infrastructure)": { Basic: 0.05, Expert: 0.07, Professional: 0.10, reg: 0.20, rebate: 0.05 },
-      "MWS Tables": { Basic: 0.05, Expert: 0.07, Professional: 0.10, reg: 0.15, rebate: 0.05 },
-      "MWS DataOps": { Basic: 0.05, Expert: 0.07, Professional: 0.10, reg: 0.15, rebate: 0.05 },
-      "MWS GPT*": { Basic: 0, Expert: 0, Professional: 0, reg: 0.15, rebate: 0.05 },
-      "MWS Container Platform": { Basic: 0.05, Expert: 0.07, Professional: 0.10, reg: 0.20, rebate: 0.05 },
-      "MWS Octapi": { Basic: 0.05, Expert: 0.07, Professional: 0.10, reg: 0.15, rebate: 0.05 },
-      "MWS SUNQ": { Basic: 0, Expert: 0, Professional: 0, reg: 0, rebate: 0 },
+    const agentData = {
+      "Виртуальная инфраструктура (Virtual Infrastructure)": { Basic: 0.10, Expert: 0.15, Professional: 0.20 },
+      "MWS Tables": { Basic: 0.10, Expert: 0.15, Professional: 0.20 },
+      "Виртуальное рабочее место (Desktops) и Виртуальное рабочее место (Workspaces с GPU)": { Basic: 0.05, Expert: 0.10, Professional: 0.15 },
+      "MWS DataOps": { Basic: 0.10, Expert: 0.15, Professional: 0.20 },
+      "MWS GPT": { Basic: 0.05, Expert: 0.10, Professional: 0.15 },
+      "MWS Container Platform": { Basic: 0.10, Expert: 0.15, Professional: 0.20 },
+      "MWS Octapi": { Basic: 0.10, Expert: 0.15, Professional: 0.20 }
     };
 
-    const categories = {
-  "Infra & Network": [
-    "Виртуальная инфраструктура (Virtual Infrastructure)",
-    "Виртуальная инфраструктура. Аттестованный сегмент 152-ФЗ",
-    "Виртуальная инфраструктура. Графические процессоры GPU",
-    "Резервное копирование",
-    "Катастрофоустойчивая инфраструктура",
-    "МВС SD-WAN",
-    "Сервис быстрой доставки контента (Cloud CDN)",
-    "Изолированные сетевые соединения (Cloud VPN)"
-  ],
-  "Communication & Collaboration": [
-    "MWS Tables",
-    "Виртуальное рабочее место (Desktops) и Виртуальное рабочее место (Workspaces с GPU)",
-    "Корпоративная почта MWS",
-    "Офис MWS",
-    "Диск MWS",
-    "MWS Cloud Platform Object Storage"
-  ],
-  "Data&BI": ["MWS DataOps"],
-  "AI/ML": ["MWS GPT*"],
-  "DevOps": ["MWS Container Platform", "MWS Octapi", "MWS SUNQ"]
-};
+    const resellerData = {
+      "Виртуальная инфраструктура (Virtual Infrastructure)": { Basic: 0.05, Expert: 0.07, Professional: 0.10 },
+      "MWS Tables": { Basic: 0.05, Expert: 0.07, Professional: 0.10 },
+      "MWS DataOps": { Basic: 0.05, Expert: 0.07, Professional: 0.10 },
+      "MWS GPT*": { Basic: 0, Expert: 0, Professional: 0 },
+      "MWS Container Platform": { Basic: 0.05, Expert: 0.07, Professional: 0.10 },
+      "MWS Octapi": { Basic: 0.05, Expert: 0.07, Professional: 0.10 }
+    };
 
-    function updateProducts(role) {
-  const categorySelect = document.getElementById(role + "Category");
-  const productSelect = document.getElementById(role + "Product");
-  productSelect.innerHTML = "";
-  const selectedCat = categorySelect.value;
-  if (categories[selectedCat]) {
-    categories[selectedCat].forEach(p => {
-      const opt = document.createElement("option");
-      opt.value = p;
-      opt.text = p;
-      productSelect.appendChild(opt);
-    });
-  }
-}
-
-    window.onload = function() {
-  ["agentCategory", "resellerCategory"].forEach(id => {
-    const select = document.getElementById(id);
-    select.innerHTML = "";
-    Object.keys(categories).forEach(cat => {
-      const opt = document.createElement("option");
-      opt.value = cat;
-      opt.text = cat;
-      select.appendChild(opt);
-    });
-  });
-  updateProducts("agent");
-  updateProducts("reseller");
-};
-
-    function calculateAgent() {
-      const level = document.getElementById("agentLevel").value;
-      const product = document.getElementById("agentProduct").value;
-      const amount = parseFloat(document.getElementById("agentAmount").value);
-      const registered = document.getElementById("agentRegistered").value === "yes";
-
-      if (!discounts[product]) return;
-      let discount = discounts[product][level] || 0;
-      if (registered) discount += (discounts[product].reg || 0);
-      const rebate = amount >= 15000000 ? (discounts[product].rebate || 0) : 0;
-      const result = `Скидка: ${(discount * 100).toFixed(2)}% → ${(amount * discount).toFixed(2)} руб.\n` +
-                     (rebate > 0 ? `Рибейт: ${(rebate * 100).toFixed(2)}% → ${(amount * rebate).toFixed(2)} руб.` : "");
-      document.getElementById("agentResult").innerText = result;
+    function populateTable(id, data) {
+      const table = document.getElementById(id + "Table");
+      table.innerHTML = '<tr><th>✓</th><th>Продукт</th><th>Сумма, руб.</th></tr>';
+      for (const product in data) {
+        const row = document.createElement("tr");
+        row.innerHTML = `<td><input type='checkbox' data-product="${product}" onchange="toggleInput(this)"></td>
+                         <td>${product}</td>
+                         <td><input type='number' data-input="${product}" disabled></td>`;
+        table.appendChild(row);
+      }
     }
 
-    function calculateReseller() {
-      const level = document.getElementById("resellerLevel").value;
-      const product = document.getElementById("resellerProduct").value;
-      const amount = parseFloat(document.getElementById("resellerAmount").value);
-      if (!discounts[product]) return;
-      const reward = (discounts[product][level] || 0);
-      const result = `Вознаграждение: ${(reward * 100).toFixed(2)}% → ${(amount * reward).toFixed(2)} руб.`;
-      document.getElementById("resellerResult").innerText = result;
+    function toggleInput(checkbox) {
+      const product = checkbox.dataset.product;
+      const input = document.querySelector(`[data-input="${product}"]`);
+      input.disabled = !checkbox.checked;
+      if (!checkbox.checked) input.value = '';
+    }
+
+    function calculate(type) {
+      const level = document.getElementById(type + "Level").value;
+      const data = type === 'agent' ? agentData : resellerData;
+      let sum = 0;
+      for (const product in data) {
+        const checkbox = document.querySelector(`#${type}Table input[data-product="${product}"]`);
+        const input = document.querySelector(`#${type}Table input[data-input="${product}"]`);
+        if (checkbox.checked && input.value) {
+          const amount = parseFloat(input.value);
+          const percent = data[product][level] || 0;
+          sum += amount * percent;
+        }
+      }
+      document.getElementById(type + "Result").innerText = (type === 'agent' ? 'Скидка: ' : 'Вознаграждение: ') + sum.toFixed(2) + ' руб.';
     }
 
     function showTab(id) {
@@ -239,6 +118,11 @@
       document.querySelector(`[onclick="showTab('${id}')"]`).classList.add('active');
       document.getElementById(id).classList.add('active');
     }
+
+    window.onload = () => {
+      populateTable('agent', agentData);
+      populateTable('reseller', resellerData);
+    };
   </script>
 </body>
 </html>
