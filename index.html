@@ -116,6 +116,11 @@
     if (!checkbox.checked) input.value = '';
   }
 }"]`);
+  if (input) {
+    input.disabled = !checkbox.checked;
+    if (!checkbox.checked) input.value = '';
+  }
+}"]`);
       input.disabled = !checkbox.checked;
       if (!checkbox.checked) input.value = '';
     }
