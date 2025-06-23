@@ -33,6 +33,7 @@
     </div>
 
     <div id="agent" class="tab-content active">
+      <label><input type="checkbox" id="dealRegistered"> Сделка зарегистрирована</label>
       <label>Ваш уровень:</label>
       <select id="agentLevel">
         <option value="Basic">Basic</option>
@@ -99,6 +100,7 @@
     function calculate(type) {
       const level = document.getElementById(type + "Level").value;
       const data = type === 'agent' ? agentData : resellerData;
+      const isRegistered = type === 'agent' && document.getElementById("dealRegistered").checked;
       let sum = 0;
       for (const product in data) {
         const checkbox = document.querySelector(`#${type}Table input[data-product="${product}"]`);
@@ -106,7 +108,11 @@
         if (checkbox.checked && input.value) {
           const amount = parseFloat(input.value);
           const percent = data[product][level] || 0;
-          sum += amount * percent;
+          let finalPercent = percent;
+          if (type === 'agent' && isRegistered) {
+            finalPercent += 0.15; // 15% за регистрацию сделки
+          }
+          sum += amount * finalPercent;
         }
       }
       document.getElementById(type + "Result").innerText = (type === 'agent' ? 'Скидка: ' : 'Вознаграждение: ') + sum.toFixed(2) + ' руб.';
