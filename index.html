@@ -91,14 +91,136 @@
     </div>
 
     <div id="agent" class="tab-content active">
-      <!-- Agent form will be inserted here -->
+      <h2>Расчёт скидки для Агента</h2>
+      <label>Ваш уровень:</label>
+      <select id="agentLevel">
+        <option value="Basic">Basic (до 5 млн руб)</option>
+        <option value="Expert">Expert (5–15 млн руб)</option>
+        <option value="Professional">Professional (15+ млн руб)</option>
+      </select>
+
+      <label>Специализация:</label>
+      <select id="agentCategory" onchange="updateProducts('agent')"></select>
+
+      <label>Продукт:</label>
+      <select id="agentProduct"></select>
+
+      <label>Вы регистрировали сделку?</label>
+      <select id="agentRegistered">
+        <option value="no">Нет</option>
+        <option value="yes">Да</option>
+      </select>
+
+      <label>Сумма контракта, руб.:</label>
+      <input type="number" id="agentAmount" placeholder="Введите сумму">
+
+      <button class="calculate" onclick="calculateAgent()">Рассчитать</button>
+
+      <div class="result" id="agentResult"></div>
     </div>
+
     <div id="reseller" class="tab-content">
-      <!-- Reseller form will be inserted here -->
+      <h2>Расчёт вознаграждения для Реселлера</h2>
+      <label>Ваш уровень:</label>
+      <select id="resellerLevel">
+        <option value="Basic">Basic (до 5 млн руб)</option>
+        <option value="Expert">Expert (5–15 млн руб)</option>
+        <option value="Professional">Professional (15+ млн руб)</option>
+      </select>
+
+      <label>Специализация:</label>
+      <select id="resellerCategory" onchange="updateProducts('reseller')"></select>
+
+      <label>Продукт:</label>
+      <select id="resellerProduct"></select>
+
+      <label>Сумма контракта, руб.:</label>
+      <input type="number" id="resellerAmount" placeholder="Введите сумму">
+
+      <button class="calculate" onclick="calculateReseller()">Рассчитать</button>
+
+      <div class="result" id="resellerResult"></div>
     </div>
   </main>
 
   <script>
+    const discounts = {
+      "Виртуальная инфраструктура (Virtual Infrastructure)": { Basic: 0.05, Expert: 0.07, Professional: 0.10, reg: 0.20, rebate: 0.05 },
+      "MWS Tables": { Basic: 0.05, Expert: 0.07, Professional: 0.10, reg: 0.15, rebate: 0.05 },
+      "MWS DataOps": { Basic: 0.05, Expert: 0.07, Professional: 0.10, reg: 0.15, rebate: 0.05 },
+      "MWS GPT*": { Basic: 0, Expert: 0, Professional: 0, reg: 0.15, rebate: 0.05 },
+      "MWS Container Platform": { Basic: 0.05, Expert: 0.07, Professional: 0.10, reg: 0.20, rebate: 0.05 },
+      "MWS Octapi": { Basic: 0.05, Expert: 0.07, Professional: 0.10, reg: 0.15, rebate: 0.05 },
+      "MWS SUNQ": { Basic: 0, Expert: 0, Professional: 0, reg: 0, rebate: 0 },
+    };
+
+    const categories = {
+      "Infra & Network": ["Виртуальная инфраструктура (Virtual Infrastructure)"],
+      "Communication & Collaboration": ["MWS Tables"],
+      "Data&BI": ["MWS DataOps"],
+      "AI/ML": ["MWS GPT*"],
+      "DevOps": ["MWS Container Platform", "MWS Octapi", "MWS SUNQ"]
+    };
+
+    function updateProducts(role) {
+      const categorySelect = document.getElementById(role + "Category");
+      const productSelect = document.getElementById(role + "Product");
+      productSelect.innerHTML = "";
+      const selectedCat = categorySelect.value;
+      for (const [cat, prods] of Object.entries(categories)) {
+        if (prods.includes(selectedCat)) {
+          prods.forEach(p => {
+            const opt = document.createElement("option");
+            opt.value = p;
+            opt.text = p;
+            productSelect.appendChild(opt);
+          });
+          break;
+        }
+      }
+    }
+
+    window.onload = function() {
+      ["agentCategory", "resellerCategory"].forEach(id => {
+        const select = document.getElementById(id);
+        Object.entries(categories).forEach(([cat, prods]) => {
+          prods.forEach(p => {
+            const opt = document.createElement("option");
+            opt.value = p;
+            opt.text = p;
+            select.appendChild(opt);
+          });
+        });
+      });
+      updateProducts("agent");
+      updateProducts("reseller");
+    };
+
+    function calculateAgent() {
+      const level = document.getElementById("agentLevel").value;
+      const product = document.getElementById("agentProduct").value;
+      const amount = parseFloat(document.getElementById("agentAmount").value);
+      const registered = document.getElementById("agentRegistered").value === "yes";
+
+      if (!discounts[product]) return;
+      let discount = discounts[product][level] || 0;
+      if (registered) discount += (discounts[product].reg || 0);
+      const rebate = amount >= 15000000 ? (discounts[product].rebate || 0) : 0;
+      const result = `Скидка: ${(discount * 100).toFixed(2)}% → ${(amount * discount).toFixed(2)} руб.\n` +
+                     (rebate > 0 ? `Рибейт: ${(rebate * 100).toFixed(2)}% → ${(amount * rebate).toFixed(2)} руб.` : "");
+      document.getElementById("agentResult").innerText = result;
+    }
+
+    function calculateReseller() {
+      const level = document.getElementById("resellerLevel").value;
+      const product = document.getElementById("resellerProduct").value;
+      const amount = parseFloat(document.getElementById("resellerAmount").value);
+      if (!discounts[product]) return;
+      const reward = (discounts[product][level] || 0);
+      const result = `Вознаграждение: ${(reward * 100).toFixed(2)}% → ${(amount * reward).toFixed(2)} руб.`;
+      document.getElementById("resellerResult").innerText = result;
+    }
+
     function showTab(id) {
       document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
